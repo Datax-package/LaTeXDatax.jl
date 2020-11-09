@@ -1,0 +1,17 @@
+\ProvidesPackage{datax}[2020-11-06]
+\RequirePackage{pgfkeys}
+
+% TODO: Add filename option
+\newcommand{\@dataxfile}{data.tex}
+
+
+\pgfkeys{ %
+	/datax/.is family, datax, %
+	.unknown/.code={\pgfkeyssetvalue{\pgfkeyscurrentpath/\pgfkeyscurrentname}{#1}} %
+}
+
+\input{\@dataxfile}
+
+\newcommand{\datax}[1]{\pgfkeysvalueof{/datax/#1}}
+
+\endinput
