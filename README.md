@@ -2,7 +2,7 @@
 Save specified variables to a data file to be read into a LaTeX document using the accompanying package `datax.sty`.
 
 ## Installation
-`using Pkg;Pkg.add https://github.com/gustaphe/Datax.jl`, and then move `~/.julia/packages/Datax/src/datax.sty` into your texmf tree.
+`using Pkg;Pkg.add("https://github.com/gustaphe/Datax.jl")`, and then move `~/.julia/packages/Datax/src/datax.sty` into your texmf tree (or link, `ln -s ~/.julia/packages/Datax/src/datax.sty $TEXMFHOME/tex/latex/datax/datax.sty`).
 
 ## Usage
 ```julia
