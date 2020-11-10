@@ -66,7 +66,9 @@ end
 
 printdata(f::IO,v::String,fmt::String) = print(f,v)
 printdata(f::IO,v::Number,fmt::String) = print(f,"\\num{"*sprintf1(fmt,v)*"}")
+printdata(f::IO,v::AbstractArray{<:Number},fmt::String) = print(f,"\\numlist{"*prod(sprintf1.(fmt,v).*";")*"}")
 printdata(f::IO,v::Tuple{<:Number,String},fmt::String) = print(f,"\\SI{"*sprintf1(fmt,v[1])*"}{"*v[2]*"}")
+printdata(f::IO,v::Tuple{AbstractArray{<:Number},String},fmt::String) = print(f,"\\SIlist{"*prod(sprintf1.(fmt,v[1]).*";")*"}{"*v[2]*"}")
 printdata(f::IO,v::Tuple{String,Vararg},fmt::String) = printdata(f,length(v)>2 ? v[2:end] : v[2], v[1])
 
 function __init__()
@@ -75,6 +77,11 @@ function __init__()
         function printdata(f::IO,v::Unitful.Quantity,fmt::String)
             print(f,"\\SI{"*sprintf1(fmt,v.val)*"}{")
             siunitxprint(f,Unitful.unit(v))
+            print(f,"}")
+        end
+        function printdata(f::IO,v::AbstractArray{T},fmt::String) where T<:Unitful.Quantity
+            print(f,"\\SIlist{"*prod(sprintf1.(fmt,Unitful.ustrip(v)).*";")*"}{")
+            siunitxprint(f,Unitful.unit(T))
             print(f,"}")
         end
 
