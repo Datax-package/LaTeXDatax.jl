@@ -47,16 +47,14 @@ c="hi"
 @datax a b c
 ```
 """
-macro datax(varargs...)
-    return quote
-        datax(
-              Dict(
-                   [
-                    d => eval(d)
-                    for d in $(esc(varargs))
-                   ]
-                  )
-             )
+macro datax(args...)
+    esc(datax_helper(args...))
+end
+function datax_helper(args...)
+    names = Expr(:vect, QuoteNode.(args)...)
+    values = Expr(:vect, args...)
+    quote
+        datax(Dict($names .=> $values))
     end
 end
 
