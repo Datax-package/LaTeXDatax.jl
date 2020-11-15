@@ -1,8 +1,16 @@
-\ProvidesPackage{datax}[2020-11-06]
+\NeedsTeXFormat{LaTeX2e}[2020-02-02]
+\ProvidesPackage{datax}[2020-11-15]
 \RequirePackage{pgfkeys}
+\RequirePackage{pgfopts}
 
-% TODO: Add filename option
-\newcommand{\@dataxfile}{data.tex}
+
+\pgfkeys{
+	/packageoptions/.cd, %
+	dataxfile/.store in = \dataxfile, %
+	dataxfile = data.tex, %
+}
+
+\ProcessPgfPackageOptions{/packageoptions}
 
 
 \pgfkeys{ %
@@ -10,8 +18,13 @@
 	.unknown/.code={\pgfkeyssetvalue{\pgfkeyscurrentpath/\pgfkeyscurrentname}{#1}} %
 }
 
-\input{\@dataxfile}
+\input{\dataxfile}
 
-\newcommand{\datax}[1]{\pgfkeysvalueof{/datax/#1}}
+\newcommand{\datax}[1]{\pgfkeysifdefined{/datax/#1}{ %
+		\pgfkeysvalueof{/datax/#1} %
+		}{ %
+		\PackageWarning{datax}{Data value `#1' undefined }\textbf{??} %
+	} %
+}
 
 \endinput
