@@ -2,7 +2,7 @@
 Save specified variables to a data file to be read into a LaTeX document using the accompanying package `datax.sty`.
 
 ## Installation
-`using Pkg;Pkg.add("https://github.com/Datax-package/Datax.jl")`, and install [the datax package](https://github.com/Datax-package/Datax.sty).
+`using Pkg;Pkg.add("https://github.com/Datax-package/Datax.jl")`, and install [the datax package [ctan]](https://ctan.org/tex-archive/macros/latex/contrib/datax).
 
 ## Usage
 ```julia
