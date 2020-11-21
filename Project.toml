@@ -1,4 +1,4 @@
-name = "Datax"
+name = "LaTeXDatax"
 uuid = "644dedec-337d-45c6-9a86-27a5fed2b77d"
 authors = ["David Gustavsson <david.e.gustavsson@gmail.com> and contributors"]
 version = "1.0.0"
