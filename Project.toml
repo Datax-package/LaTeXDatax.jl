@@ -1,7 +1,7 @@
 name = "LaTeXDatax"
 uuid = "644dedec-337d-45c6-9a86-27a5fed2b77d"
 authors = ["David Gustavsson <david.e.gustavsson@gmail.com> and contributors"]
-version = "1.0.0"
+version = "2.0.0"
 
 [deps]
 Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
