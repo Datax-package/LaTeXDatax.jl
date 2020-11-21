@@ -3,8 +3,6 @@ using  Requires, Formatting
 
 export datax,@datax
 
-# TODO: use printf
-
 """
 ```julia
 datax(...)
