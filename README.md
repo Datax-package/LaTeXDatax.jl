@@ -31,3 +31,6 @@ data(a=a, b="Something", c=c, d=d, filename="datafile.tex");
 The speed of light is \datax{c}.
 \end{document}
 ```
+
+More detailed usage information is in the docstrings of the code, run `?datax`
+and `?@datax` in REPL to read them.

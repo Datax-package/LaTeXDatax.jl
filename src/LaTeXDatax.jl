@@ -12,12 +12,13 @@ Print the arguments to a file readable by pgfkeys (Best for use with the
 `datax` LaTeX package). A string will be printed as is, a number will be
 wrapped in `siunitx`'s `\\num`, and a tuple `(value::Number, unit::String)` or
 a `Unitful` quantity will be wrapped in `\\SI`.  If the argument is a `Tuple`
-and the first argument is a string, it is used as a format string for the rest
-of the tuple.  There's also a macro form, `@datax`, which reuses the variable
-names from the script.
+and the first argument is a string, it is used as a c-printf style format
+string for the rest of the tuple (overriding the default format set by the
+"format" argument).  There's also a macro form, `@datax`, which reuses the
+variable names from the script.
 
-The variable name "filename" cannot be stored, but will instead be used as the
-name of the file to store.
+The variable names "filename" and "format" cannot be stored, but will instead
+be used as the name of the file and the default number format respectively.
 
 # Examples
 ```julia
@@ -26,9 +27,13 @@ datax(a=2,b=1.24,c="hi",d=(24,"\\meter"),e=15u"kg/s^2")
 Save the given variables in siunitx form.
 
 ```julia
-datax(lambda=612.2u"nm",filename="other.tex")
+datax(lambda=612.2u"nm",filename="other.tex",format="%.4e")
+datax(lambda=("%.4e",612.2,"\\nano\\meter"),filename="other.tex")
+```
+Save just the variable lambda, in the file "other.tex", in scientific notation
+with 4 digits of accuracy. The two lines are equivalent.
 """
-function datax(;filename="data.tex",kwargs...)
+function datax(;filename="data.tex",format="%.4g",kwargs...)
     datax(Dict(kwargs),filename=filename)
 end
 
@@ -48,22 +53,23 @@ end
 @datax ...
 ```
 Print the arguments to a file readable by pgfkeys (Best for use with the
-`datax` LaTeX package) Like the `datax()` function, but use the variables'
+`datax` LaTeX package). Like the `datax()` function, but use the variables'
 names.
 
 # Examples
 ```julia
 a=2;
-b=3.2u"m"
-c="hi"
-filename="datafile.tex"
-@datax a b c filename
+b=3.2u"m";
+c="hi";
+filename="datafile.tex";
+format="%.2g";
+@datax a b c filename format
 ```
 """
 macro datax(args...)
     esc(datax_helper(args...))
 end
-function datax_helper(filname="data.tex",args...)
+function datax_helper(filname="data.tex",format="%.4g",args...)
     names = Expr(:vect, QuoteNode.(args)...)
     values = Expr(:vect, args...)
     quote
@@ -72,10 +78,17 @@ function datax_helper(filname="data.tex",args...)
 end
 
 printdata(f::IO,v::String,fmt::String) = print(f,v)
-printdata(f::IO,v::Number,fmt::String) = print(f,"\\num{"*sprintf1(fmt,v)*"}")
-printdata(f::IO,v::AbstractArray{<:Number},fmt::String) = print(f,"\\numlist{"*prod(sprintf1.(fmt,v).*";")*"}")
-printdata(f::IO,v::Tuple{<:Number,String},fmt::String) = print(f,"\\SI{"*sprintf1(fmt,v[1])*"}{"*v[2]*"}")
-printdata(f::IO,v::Tuple{AbstractArray{<:Number},String},fmt::String) = print(f,"\\SIlist{"*prod(sprintf1.(fmt,v[1]).*";")*"}{"*v[2]*"}")
+printdata(f::IO,v::Number,fmt::String) = print(f,"\\num{",sprintf1(fmt,v),"}")
+printdata(f::IO,v::AbstractArray{<:Number},fmt::String) = print(f,"\\numlist{",prod(sprintf1.(fmt,v).*";"),"}")
+printdata(f::IO,v::Tuple{<:Number,String},fmt::String) = print(f,"\\SI{",sprintf1(fmt,v[1]),"}{",v[2],"}")
+printdata(f::IO,v::Tuple{AbstractArray{<:Number},String},fmt::String) = print(f,
+                                                                              "\\SIlist{",
+                                                                              prod(
+                                                                                   sprintf1.(fmt,v[1]).*";")
+                                                                              ,"}{",
+                                                                              v[2],
+                                                                              "}"
+                                                                             )
 printdata(f::IO,v::Tuple{String,Vararg},fmt::String) = printdata(f,length(v)>2 ? v[2:end] : v[2], v[1])
 
 function __init__()
