@@ -4,32 +4,28 @@ using Test
 @testset "LaTeXDatax.jl" begin
     io = IOBuffer();
 
-    # Basic printing
-    LaTeXDatax.printdata(io,"String","%.4g")
+    # Basic data printing
+    LaTeXDatax.printdata(io,"String")
     @test String(take!(io)) == "String"
-    LaTeXDatax.printdata(io,4.1,"%.4g")
-    @test String(take!(io)) == "\\num{4.1}"
-    LaTeXDatax.printdata(io,[1.0,2.4,3.0],"%.4g")
-    @test String(take!(io)) == "\\numlist{1;2.4;3;}"
 
-    # Print units
-    LaTeXDatax.printdata(io,(1.0,"\\meter"),"%.4g")
-    @test String(take!(io)) == "\\SI{1}{\\meter}"
-    LaTeXDatax.printdata(io,([1,2,3],"\\kilogram"),"%.4g")
-    @test String(take!(io)) == "\\SIlist{1;2;3;}{\\kilogram}"
+    LaTeXDatax.printdata(io,1.25)
+    @test String(take!(io)) == "\$1.25\$"
 
-    # Format strings
-    LaTeXDatax.printdata(io,pi,"%.3g")
+    LaTeXDatax.printdata(io,3.141592; fmt="%.2f", unitformat=:siunitx)
     @test String(take!(io)) == "\\num{3.14}"
-    LaTeXDatax.printdata(io,("%.2g",pi),"%.4g")
-    @test String(take!(io)) == "\\num{3.1}"
-    LaTeXDatax.printdata(io,("%.5g",pi,"\\liter"),"%.4g")
-    @test String(take!(io)) == "\\SI{3.1416}{\\liter}"
 
-    # Unitful
-    LaTeXDatax.printdata(io,2u"m","%.4g")
-    @test String(take!(io)) == "\\SI{2}{\\meter}"
-    LaTeXDatax.printdata(io,[1.4,2.8]u"g/J","%.4g")
-    @test String(take!(io)) == "\\SIlist{1.4;2.8;}{\\gram\\per\\joule}"
+    # keyval printing
+    LaTeXDatax.printkeyval(io, :a, 612.2u"nm")
+    @test String(take!(io)) == "\\pgfkeyssetvalue{/datax/a}{\$612.2\\;\\mathrm{nm}\$}\n"
 
+    # complete macro
+    a = 2;
+    b = 3.2u"m";
+    @datax a b c=3*a d=27 unitformat:=:siunitx io:=io
+    @test String(take!(io)) == """
+    \\pgfkeyssetvalue{/datax/a}{\\num{2}}
+    \\pgfkeyssetvalue{/datax/b}{\\SI{3.2}{\\meter}}
+    \\pgfkeyssetvalue{/datax/c}{\\num{6}}
+    \\pgfkeyssetvalue{/datax/d}{\\num{27}}
+    """
 end
