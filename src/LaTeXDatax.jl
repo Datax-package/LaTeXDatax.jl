@@ -54,6 +54,7 @@ function datax_helper(args...)
             push!(names, a.args[1])
             push!(values, a.args[2])
             continue
+
         end
         if a.head == :(:=)
             push!(metaargs, Expr(:kw,a.args[1],a.args[2]))
@@ -61,6 +62,7 @@ function datax_helper(args...)
         end
         error("I don't know what to do with argument $a")
     end
+
     names = Expr(:tuple, QuoteNode.(names)...)
     values = Expr(:tuple, values...)
     quote

@@ -1,7 +1,9 @@
 name = "LaTeXDatax"
 uuid = "644dedec-337d-45c6-9a86-27a5fed2b77d"
 authors = ["David Gustavsson <david.e.gustavsson@gmail.com> and contributors"]
+
 version = "3.0.0"
+
 
 [deps]
 Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
