@@ -8,29 +8,21 @@ the accompanying package `datax.sty`.
 
 ## Usage
 ```julia
-using LaTeXDatax
-filename = "datafile.tex"; # default is "data.tex"
+using LaTeXDatax, Unitful
 a = 25;
-b = "Something";
-c = (300,"\\mega\\meter\\per\\second");
 
-using Unitful
-d = 4.2u"Hz";
-
-@datax a b c d filename
-# or, equivalently,
-data(a=a, b="Something", c=c, d=d, filename="datafile.tex");
+@datax a b=3a c=3e8u"m/s" d="Raw string" filename:="data.tex"
 ```
 
 ```latex
 \documentclass{article}
 \usepackage{siunitx}
-\usepackage[dataxfile=datafile.tex]{datax}
+\usepackage[dataxfile=data.tex]{datax}
 
 \begin{document}
 The speed of light is \datax{c}.
 \end{document}
 ```
 
-More detailed usage information is in the docstrings of the code, run `?datax`
-and `?@datax` in REPL to read them.
+More detailed usage information is in the docstrings of the code, run `?@datax`
+in REPL to read them.
