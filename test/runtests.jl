@@ -1,17 +1,17 @@
-using Unitful,LaTeXDatax
+using Unitful, LaTeXDatax
 using Test
 
 @testset "LaTeXDatax.jl" begin
-    io = IOBuffer();
+    io = IOBuffer()
 
     # Basic data printing
-    LaTeXDatax.printdata(io,"String")
+    LaTeXDatax.printdata(io, "String")
     @test String(take!(io)) == "String"
 
-    LaTeXDatax.printdata(io,1.25)
+    LaTeXDatax.printdata(io, 1.25)
     @test String(take!(io)) == "\$1.25\$"
 
-    LaTeXDatax.printdata(io,3.141592; fmt="%.2f", unitformat=:siunitx)
+    LaTeXDatax.printdata(io, 3.141592; fmt="%.2f", unitformat=:siunitx)
     @test String(take!(io)) == "\\num{3.14}"
 
     # keyval printing
@@ -19,8 +19,8 @@ using Test
     @test String(take!(io)) == "\\pgfkeyssetvalue{/datax/a}{\$612.2\\;\\mathrm{nm}\$}\n"
 
     # complete macro
-    a = 2;
-    b = 3.2u"m";
+    a = 2
+    b = 3.2u"m"
     @datax a b c=3*a d=27 unitformat:=:siunitx io:=io
     @test String(take!(io)) == """
     \\pgfkeyssetvalue{/datax/a}{\\num{2}}
@@ -28,4 +28,11 @@ using Test
     \\pgfkeyssetvalue{/datax/c}{\\num{6}}
     \\pgfkeyssetvalue{/datax/d}{\\num{27}}
     """
+
+    # Write to file
+    rm.(("data.tex", "test.pdf", "test.log"); force=true)
+    @datax a b c=3*a d=27 unitformat:=:siunitx filename:="data.tex"
+    @test isfile("data.tex")
+    @test_nowarn run(`pdflatex --file-line-error --interaction=nonstopmode test.tex`)
+    rm("test.aux"; force=true)
 end
