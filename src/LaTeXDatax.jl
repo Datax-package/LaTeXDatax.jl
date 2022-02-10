@@ -30,7 +30,7 @@ julia> a = 2;
 julia> b = 3.2u"m";
 julia> @datax a b c=3*a d=27 unitformat:=:siunitx
 \\pgfkeyssetvalue{/datax/a}{\\num{2}}
-\\pgfkeyssetvalue{/datax/b}{\\SI{3.2}{\\meter}}
+\\pgfkeyssetvalue{/datax/b}{\\qty{3.2}{\\meter}}
 \\pgfkeyssetvalue{/datax/c}{\\num{6}}
 \\pgfkeyssetvalue{/datax/d}{\\num{27}}
 
