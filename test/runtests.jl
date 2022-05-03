@@ -1,5 +1,9 @@
-using Unitful, LaTeXDatax
+using Unitful, LaTeXDatax, JuliaFormatter
 using Test
+# Supply "overwrite" as a commandline argument to overwrite in formatting step
+overwrite = get(ARGS, 1, "") == "overwrite"
+
+cd(@__DIR__)
 
 @testset "LaTeXDatax.jl" begin
     io = IOBuffer()
@@ -21,7 +25,7 @@ using Test
     # complete macro
     a = 2
     b = 3.2u"m"
-    @datax a b c=3*a d=27 unitformat:=:siunitx io:=io
+    @datax a b c = 3 * a d = 27 unitformat := :siunitx io := io
     @test String(take!(io)) == """
     \\pgfkeyssetvalue{/datax/a}{\\num{2}}
     \\pgfkeyssetvalue{/datax/b}{\\qty{3.2}{\\meter}}
@@ -31,8 +35,21 @@ using Test
 
     # Write to file
     rm.(("data.tex", "test.pdf", "test.log"); force=true)
-    @datax a b c=3*a d=27 unitformat:=:siunitx filename:="data.tex"
+    @datax a b c = 3 * a d = 27 unitformat := :siunitx filename := "data.tex"
     @test isfile("data.tex")
     @test_nowarn run(`pdflatex --file-line-error --interaction=nonstopmode test.tex`)
     rm("test.aux"; force=true)
+end
+@testset "Formatting" begin
+    is_formatted = JuliaFormatter.format(LaTeXDatax; overwrite)
+    @test is_formatted
+    if ~is_formatted
+        if overwrite
+            println("The package has now been formatted. Review the changes and commit.")
+        else
+            println(
+                "The package failed formatting check. Try `JuliaFormatter.format(LaTeXDatax)`",
+            )
+        end
+    end
 end
